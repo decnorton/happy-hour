@@ -59,10 +59,12 @@ public class DragHandler : MonoBehaviour {
 
         Debug.Log(hit);
 
-        if (hit != null) {
+        if (hit != null && hit.transform != null) {
             TrayHandler tray = hit.transform.GetComponent<TrayHandler>();
 
-            tray.AddDrink(drink);
+			if (tray != null) {
+            	tray.AddDrink(drink);
+			}
         }
     }
 
