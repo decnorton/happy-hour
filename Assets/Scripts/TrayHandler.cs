@@ -4,16 +4,13 @@ using TouchScript.Gestures;
 
 public class TrayHandler : MonoBehaviour {
 
-    private void OnEnable() {
-        GetComponent<ReleaseGesture>().Released += onRelease;
+    public void AddDrink(Drink drink) {
+        Debug.Log("Added " + drink.GetType().Name);
+        BuildOrder(drink);
     }
 
-    private void OnDisable() {
-        GetComponent<ReleaseGesture>().Released -= onRelease;
-    }
+    private void BuildOrder(Drink drink) {
 
-    private void onRelease(object sender, EventArgs e) {
-        Debug.Log("onRelease");
     }
 
 }

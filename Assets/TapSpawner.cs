@@ -39,6 +39,6 @@ public class TapSpawner : MonoBehaviour {
         cube.name = "Cube";
         cube.localScale = Vector3.one * scale * cube.localScale.x;
         cube.position = hit3d.Point + hit3d.Normal * 2;
-        cube.renderer.material.color = color;
+        cube.GetComponent<Renderer>().material.color = color;
     }
 }

@@ -8,9 +8,12 @@ public class DragHandler : MonoBehaviour {
 
     private Vector3 startPosition;
 
+    private Drink drink;
 
     private void Awake() {
         startPosition = transform.localPosition;
+        drink = GetComponent<Drink>();
+        Debug.Log(drink.GetType().Name);
     }
 
     private void OnEnable() {
@@ -57,7 +60,9 @@ public class DragHandler : MonoBehaviour {
         Debug.Log(hit);
 
         if (hit != null) {
-            Debug.Log(hit.transform);
+            TrayHandler tray = hit.transform.GetComponent<TrayHandler>();
+
+            tray.AddDrink(drink);
         }
     }
 
