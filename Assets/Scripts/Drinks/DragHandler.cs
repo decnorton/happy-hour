@@ -56,11 +56,13 @@ public class DragHandler : MonoBehaviour {
             Mathf.Infinity,
             layerMask
         );
+		
+//		Debug.Log("Hit: "  + hit);
 
-        Debug.Log(hit);
-
-        if (hit != null && hit.transform != null) {
+        if (hit && hit.transform) {
             TrayHandler tray = hit.transform.GetComponent<TrayHandler>();
+
+			Debug.Log ("Tray: " + tray);
 
 			if (tray != null) {
             	tray.AddDrink(drink);
