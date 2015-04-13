@@ -46,6 +46,11 @@ public class TrayHandler : MonoBehaviour {
 
     private void UpdateOrderStatus() {
 		Debug.Log ("[UpdateOrderStatus] Is completed? " + mOrder.IsCompleted());
+
+		if (mOrder.IsCompleted ()) {
+			OnOrderCompleted();
+			return;
+		}
 		
 		Dictionary<string, int> expectedDrinks = mOrder.GetDrinks ();
 		Dictionary<string, int> actualDrinks = mOrder.GetAddedDrinks ();
@@ -80,7 +85,7 @@ public class TrayHandler : MonoBehaviour {
 				);
 
 				// Change opacity
-				SpriteRenderer renderer = drink.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.4f);
+				drink.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.4f);
 
 				mDrinkGameObjects.Add (name, drink);
 
@@ -89,6 +94,25 @@ public class TrayHandler : MonoBehaviour {
 			}
 		}
 
+		// Only if drinks have been added
+		if (actualDrinks.Keys.Count > 0) {
+			foreach (string name in actualDrinks.Keys) {
+				if (mDrinkGameObjects.ContainsKey(name)) {
+					GameObject prefab = mDrinkGameObjects[name];
+
+					if (prefab) {
+						prefab.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+					}
+				}
+			}
+		}
     }
+
+	private void OnOrderCompleted() {
+		// Order has been completed
+
+		// 1: Increment score
+		// 2: Reset tray
+	}
 
 }
