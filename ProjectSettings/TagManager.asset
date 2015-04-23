@@ -16,7 +16,7 @@ TagManager:
   - Background
   - Camera
   - Trays
-  - 
+  - Customers
   - 
   - 
   - 
@@ -43,4 +43,16 @@ TagManager:
     locked: 1
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Bartender
+    uniqueID: 2053765659
+    locked: 0
+  - name: Bar
+    uniqueID: 300731481
+    locked: 0
+  - name: Drinks
+    uniqueID: 685902165
+    locked: 0
+  - name: Customers
+    uniqueID: 1368090329
     locked: 0

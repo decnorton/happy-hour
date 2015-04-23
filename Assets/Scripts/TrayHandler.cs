@@ -5,11 +5,29 @@ using System.Collections.Generic;
 
 public class TrayHandler : MonoBehaviour {
 
+	public GameStateManager stateManager;
+	public CustomerSpawner customerSpawner;
+
 	private Order mOrder;
+	private Customer mCurrentCustomer;
+
 	private Dictionary<string, GameObject> mDrinkGameObjects = new Dictionary<string, GameObject> ();
 
-	public void Start() 
-	{
+	public void Start() {
+	}
+
+	public void GenerateOrder(Customer customer) {
+		Debug.Log ("[GenerateOrder]");
+
+		if (!customer) {
+			Debug.LogError ("GameObject doesn't have customer component");
+			return;
+		}
+
+		// Set the current customer
+		mCurrentCustomer = customer;
+	
+		// Build the order
 		BuildRandomOrder ();
 	}
 
@@ -24,17 +42,33 @@ public class TrayHandler : MonoBehaviour {
 
 		// Create a new order
 		// TODO: Select random drinks
-		mOrder = Order.CreateOrder (
-			"BeerBottle", 
-			"WineGlass",
-			"CocktailMartini"
-		);
+
+		string[] availableDrinks = Drink.GetAvailableDrinks ();
+		List<string> drinks = new List<string>();
+
+		for (int i = 0; i < 3; i++) {
+			string drinkName = null;
+
+			while (drinkName == null) {
+				int index = UnityEngine.Random.Range(0, availableDrinks.Length);
+
+				drinkName = availableDrinks[index];
+
+				if (drinks.Contains(drinkName)) {
+					drinkName = null;
+				}
+			}
+
+			drinks.Add(drinkName);
+		}
+
+		mOrder = Order.CreateOrder (drinks.ToArray());
 
 		UpdateOrderStatus ();
     }
 
     public void AddDrink(Drink drink) {
-		if (!mOrder.IsCompleted ()) {
+		if (mOrder != null && !mOrder.IsCompleted ()) {
 			if (mOrder.AddDrink(drink)) {
 				// Added successfully
 				Debug.Log ("[AddDrink] Added " + drink.GetName());
@@ -45,15 +79,35 @@ public class TrayHandler : MonoBehaviour {
     }
 
     private void UpdateOrderStatus() {
+		if (mOrder == null) {
+			Debug.Log("Order is null");
+			return;
+		}
+
 		Debug.Log ("[UpdateOrderStatus] Is completed? " + mOrder.IsCompleted());
+
+		Dictionary<string, int> expectedDrinks = mOrder.GetDrinks ();
+		Dictionary<string, int> actualDrinks = mOrder.GetAddedDrinks ();
+
+		// Only if drinks have been added
+		if (actualDrinks.Keys.Count > 0) {
+			foreach (string name in actualDrinks.Keys) {
+				if (mDrinkGameObjects.ContainsKey(name)) {
+					GameObject prefab = mDrinkGameObjects[name];
+
+					prefab.GetComponent<Drink>().PlaySound();
+					
+					if (prefab) {
+						prefab.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+					}
+				}
+			}
+		}
 
 		if (mOrder.IsCompleted ()) {
 			OnOrderCompleted();
 			return;
 		}
-		
-		Dictionary<string, int> expectedDrinks = mOrder.GetDrinks ();
-		Dictionary<string, int> actualDrinks = mOrder.GetAddedDrinks ();
 
 		// Show ghost drinks
 		if (mDrinkGameObjects.Count < expectedDrinks.Count) {
@@ -64,8 +118,8 @@ public class TrayHandler : MonoBehaviour {
 			foreach (string name in expectedDrinks.Keys) {
 				// Create a new instance
 				GameObject drink = Instantiate (
-					Drink.GetPrefab(name), 
-					transform.position, 
+					Drink.GetPrefab(name),
+					transform.position,
 					transform.rotation
 				) as GameObject;
 
@@ -78,32 +132,22 @@ public class TrayHandler : MonoBehaviour {
 				// Reposition it a bit
 				drink.transform.position += new Vector3(
 					// Space each one out
-					-1.4f + (index * spacing), 
+					-1.4f + (index * spacing),
 
 					// Push up a bit
 					0.2f
 				);
 
 				// Change opacity
-				drink.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.4f);
+				SpriteRenderer spriteRenderer = drink.GetComponent<SpriteRenderer>();
+				spriteRenderer.color = new Color(1, 1, 1, 0.4f);
+				spriteRenderer.sortingLayerName = "Bar";
+				spriteRenderer.sortingOrder = 10;
 
 				mDrinkGameObjects.Add (name, drink);
 
 				// Increase the iteration
 				index++;
-			}
-		}
-
-		// Only if drinks have been added
-		if (actualDrinks.Keys.Count > 0) {
-			foreach (string name in actualDrinks.Keys) {
-				if (mDrinkGameObjects.ContainsKey(name)) {
-					GameObject prefab = mDrinkGameObjects[name];
-
-					if (prefab) {
-						prefab.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-					}
-				}
 			}
 		}
     }
@@ -113,6 +157,27 @@ public class TrayHandler : MonoBehaviour {
 
 		// 1: Increment score
 		// 2: Reset tray
+
+		stateManager.IncrementScore (10);
+
+		Reset ();
+	}
+
+	public void Reset() {
+		foreach (GameObject drinkGameObject in mDrinkGameObjects.Values) {
+			Destroy(drinkGameObject);
+		}
+		
+		mOrder = null;
+		mCurrentCustomer = null;
+		
+		if (customerSpawner) {
+			customerSpawner.SpawnCustomer();
+		}
+	}
+
+	public bool IsOrderInProgress() {
+		return mOrder != null;
 	}
 
 }

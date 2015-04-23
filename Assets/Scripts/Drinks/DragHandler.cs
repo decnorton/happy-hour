@@ -13,16 +13,17 @@ public class DragHandler : MonoBehaviour {
     private void Awake() {
         startPosition = transform.localPosition;
         drink = GetComponent<Drink>();
-        Debug.Log(drink.GetType().Name);
     }
 
     private void OnEnable() {
+		// Add event listeners
         GetComponent<SimplePanGesture>().PanStarted += onPanStarted;
         GetComponent<SimplePanGesture>().Panned += onPanned;
         GetComponent<SimplePanGesture>().PanCompleted += onPanCompleted;
     }
 
     private void OnDisable() {
+		// Remove event listeners
         GetComponent<SimplePanGesture>().PanStarted -= onPanStarted;
         GetComponent<SimplePanGesture>().Panned -= onPanned;
         GetComponent<SimplePanGesture>().PanCompleted -= onPanCompleted;

@@ -7,19 +7,33 @@ public abstract class Drink : MonoBehaviour {
 
 	// Cache for prefabs
 	private static Dictionary<string, GameObject> sPrefabs = new Dictionary<string, GameObject>();
-		
+
+	private static string[] sDrinks = {
+		"BeerBottle",
+		"BeerMug",
+		"CanRed",
+		"CocktailMartini",
+		"JuiceOrange",
+		"ShotTurquoise",
+		"WineGlass"
+	};
+
     void Start() {
-        // Debug.Log(GetType().Name);
+		gameObject.AddComponent (typeof(AudioSource));
     }
 
 	public string GetName() {
 		return GetType ().Name;
 	}
 
+	public static string[] GetAvailableDrinks() {
+		return sDrinks;
+	}
+
 	public static string GetPrefabName(string name) {
 		string prefabName = Regex.Replace(
 			name,
-			"(?<=.)([A-Z])", 
+			"(?<=.)([A-Z])",
 			"_$0",
 			RegexOptions.Compiled
 		).ToLower ();
@@ -41,5 +55,20 @@ public abstract class Drink : MonoBehaviour {
     public bool SameAs(Drink drink) {
         return this.GetType().Equals(drink.GetType());
     }
+
+	public void PlaySound() {
+		AudioClip sound = GetSound ();
+
+		if (sound) {
+			Debug.Log("Playing sound");
+			AudioSource source = GetComponent<AudioSource>();
+
+			source.clip = sound;
+			source.Play();
+
+		}
+	}
+
+	public abstract AudioClip GetSound ();
 
 }
