@@ -55,8 +55,10 @@ public class GameStateManager : MonoBehaviour {
 
 			Debug.Log ("Score: " + score + " | Fill amount: " + amount);
 
-			if (scoreImage) {
-				scoreImage.fillAmount = amount;
+			if (scoreImage && scoreImage.fillAmount < amount) {
+				float targetAmount = scoreImage.fillAmount + Time.deltaTime;
+
+				scoreImage.fillAmount = Mathf.Min(targetAmount, amount);
 			}
 		}
 

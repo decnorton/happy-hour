@@ -50,6 +50,7 @@ public class DragHandler : MonoBehaviour {
 
         // Get the main camera
         Camera camera = Camera.main;
+
         Ray ray = camera.ScreenPointToRay(gesture.ScreenPosition);
 
         RaycastHit2D hit = Physics2D.GetRayIntersection(
